@@ -1,30 +1,17 @@
 package 连连看;
 
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements ActionListener ,MouseListener,KeyListener{
 
     private Image[] pics;
     private final int n;
     private int[][] map;
-    private final int leftX = 140;
-    private final int leftY = 80;
+    private final int leftX = 40;
+    private final int leftY = 32;
     private boolean isClick = false;
     private int clickId,clickX,clickY;
     private int linkMethod;
@@ -342,12 +329,12 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         Point p2 = new Point(y2*50+leftX+25,x2*50+leftY+25);
         if(linkMethod == LINKBYHORIZONTAL || linkMethod == LINKBYVERTICAL){
             g.drawLine(p1.x, p1.y,p2.x, p2.y);
-            //System.out.println("�޹յ㻭��");
+
         }else if(linkMethod ==LINKBYONECORNER){
             Point point_z1 = new Point(z1.y*50+leftX+25,z1.x*50+leftY+25);//���յ�ת������������
             g.drawLine(p1.x, p1.y,point_z1.x, point_z1.y);
             g.drawLine(p2.x, p2.y,point_z1.x, point_z1.y);
-            //System.out.println("���յ㻭��");
+
         }else{
             Point point_z1 = new Point(z1.y*50+leftX+25,z1.x*50+leftY+25);
             Point point_z2 = new Point(z2.y*50+leftX+25,z2.x*50+leftY+25);
@@ -363,7 +350,6 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
             g.drawLine(p2.x, p2.y, point_z2.x, point_z2.y);
             g.drawLine(point_z1.x,point_z1.y, point_z2.x, point_z2.y);
 
-            //System.out.println("˫�յ㻭��");
         }
 
         count+=2;
@@ -430,7 +416,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
 
     private void isWin() {
 
-        if(count==n*n){
+        if(count==2){
             String msg = "再来一轮吧";
             int type = JOptionPane.YES_NO_OPTION;
             String title = "恭喜你完成了游戏！";
