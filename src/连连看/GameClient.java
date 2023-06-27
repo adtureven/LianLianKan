@@ -3,6 +3,9 @@ package 连连看;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.*;
 
 import javax.swing.*;
 
@@ -18,6 +21,11 @@ public class GameClient extends JFrame{
         JPanel panel = new JPanel(new BorderLayout());
         textField.setEditable(false);
 
+        loadState();
+        System.out.println(gameState.getCount());
+        panel2=new GamePanel(gameState);
+        textField.setText(gameState.getCount());
+
         panel2.setLayout(new BorderLayout());
         panel.setLayout(new FlowLayout());
         panel.add(label1);
@@ -29,7 +37,15 @@ public class GameClient extends JFrame{
         this.getContentPane().add(panel,BorderLayout.SOUTH);
         this.getContentPane().add(panel2,BorderLayout.CENTER);
         this.setSize(600,630);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                saveState();
+                dispose();
+            }
+        });
+
         this.setTitle("连连看游戏");
         this.setVisible(true);
         button1.setEnabled(true);
@@ -44,9 +60,34 @@ public class GameClient extends JFrame{
 
         button2.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e){
+                saveState();
                 System.exit(0);
             }
         });
+    }
+
+    private GameState gameState;
+    public void saveState(){
+        try{
+            gameState=new GameState(textField.getText(), panel2.get_Map());
+            FileOutputStream fileout=new FileOutputStream("gamestate.txt");
+            ObjectOutputStream out =new ObjectOutputStream(fileout);
+            out.writeObject(gameState);
+            out.close();
+            fileout.close();
+            System.out.println("saved");
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    public void loadState(){
+        try{
+            FileInputStream filein=new FileInputStream("gamestate.txt");
+            ObjectInputStream in=new ObjectInputStream(filein);
+            gameState=(GameState)in.readObject();
+            in.close();
+            filein.close();
+            System.out.println("load");
+        }catch (Exception e){e.printStackTrace();}
     }
 
     public static void main(String[] args) {

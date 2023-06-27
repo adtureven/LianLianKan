@@ -1,5 +1,6 @@
 package 连连看;
 
+import javax.xml.soap.SAAJMetaFactory;
 import java.util.ArrayList;
 
 public class Map {
@@ -46,6 +47,7 @@ public class Map {
                 int	index = (int) (Math.random()*list.size());//从list中随机取一个图片ID，并将其添加到数组中，再从list中删除掉它
                 map[i][j] = list.get(index);
                 list.remove(index);
+
             }
         }
 

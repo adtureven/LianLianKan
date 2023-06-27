@@ -17,7 +17,8 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
     private int linkMethod;
     private Node z1,z2;
     private Map mapUtil;
-    public static int count = 0;
+    public int count = 0;
+    //public GameState gameState;
 
 
     public static final int LINKBYHORIZONTAL = 1,LINKBYVERTICAL = 2,LINKBYONECORNER = 3,LINKBYTWOCORNER = 4;
@@ -28,6 +29,18 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         n = 10;
         mapUtil = new Map(count, n);
         map = mapUtil.getMap();
+        this.setVisible(true);
+        this.addKeyListener(this);
+        this.addMouseListener(this);
+        this.setFocusable(true);
+        getPics();
+        repaint();
+    }
+    public GamePanel(GameState gameState){
+        setSize(600, 600);
+        n=10;
+        count=Integer.parseInt(gameState.getCount());
+        map=gameState.G_getMap();
         this.setVisible(true);
         this.addKeyListener(this);
         this.addMouseListener(this);
@@ -331,7 +344,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
             g.drawLine(p1.x, p1.y,p2.x, p2.y);
 
         }else if(linkMethod ==LINKBYONECORNER){
-            Point point_z1 = new Point(z1.y*50+leftX+25,z1.x*50+leftY+25);//���յ�ת������������
+            Point point_z1 = new Point(z1.y*50+leftX+25,z1.x*50+leftY+25);
             g.drawLine(p1.x, p1.y,point_z1.x, point_z1.y);
             g.drawLine(p2.x, p2.y,point_z1.x, point_z1.y);
 
@@ -372,6 +385,9 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         g.drawImage(pics[map[i][j]],leftX+j*50,leftY+i*50,50,50,this);
     }
 
+    public int[][]get_Map(){
+        return map;
+    }
 
     private boolean find2Block() {
 
@@ -416,7 +432,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
 
     private void isWin() {
 
-        if(count==2){
+        if(count==n*n){
             String msg = "再来一轮吧";
             int type = JOptionPane.YES_NO_OPTION;
             String title = "恭喜你完成了游戏！";
