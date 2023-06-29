@@ -19,11 +19,11 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
     private Map mapUtil;
     public int count = 0;
     //public GameState gameState;
-
-
+//    public int[] reply=new int[200];
+//    private int r_count=0;
     public static final int LINKBYHORIZONTAL = 1,LINKBYVERTICAL = 2,LINKBYONECORNER = 3,LINKBYTWOCORNER = 4;
     public static final int BLANK_STATE = -1;
-
+    public GameReply reply1=new GameReply();
     public GamePanel(int count){
         setSize(600, 600);
         n = 10;
@@ -58,7 +58,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
 
     public void paint(Graphics g){
         g.clearRect(0, 0, 800, 30);
-
+        System.out.println("paint");
         for(int i=0;i<n;i++){
             for(int j=0;j<n;j++){
                 if(map[i][j]!=BLANK_STATE){
@@ -333,7 +333,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         g2.setColor(Color.RED);
         g.drawRect(x+1, y+1, 48, 48);
     }
-
+    public GameState gS;
     @SuppressWarnings("static-access")
     private void drawLink(int x1, int y1, int x2, int y2) {
 
@@ -376,6 +376,14 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         repaint();
         map[x1][y1] = BLANK_STATE;
         map[x2][y2] = BLANK_STATE;
+//        gS=new GameState(count+"",map);
+//        reply1.add(gS);
+//        reply[r_count]=x1;
+//        reply[r_count+1]=y1;
+//        reply[r_count+2]=x2;
+//        reply[r_count+3]=y2;
+//        r_count+=4;
+        System.out.println("draw lines");
         isWin();
     }
 
@@ -383,6 +391,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
     public void clearSelectBlock(int i,int j,Graphics g){
         g.clearRect(j*50+leftX, i*50+leftY, 50, 50);
         g.drawImage(pics[map[i][j]],leftX+j*50,leftY+i*50,50,50,this);
+        System.out.println("clear");
     }
 
     public int[][]get_Map(){
@@ -432,26 +441,68 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
 
     private void isWin() {
 
-        if(count==n*n){
-            String msg = "再来一轮吧";
+        if(count==100){
+            String msg = "是否观看本局回放？";
             int type = JOptionPane.YES_NO_OPTION;
-            String title = "恭喜你完成了游戏！";
+            String title = "恭喜你完成了本轮游戏！";
             int choice = JOptionPane.showConfirmDialog(null, msg,title,type);
             if(choice==1){
                 System.exit(0);
             }else if(choice == 0){
                 startNewGame();
+                //reply1.reply();
+                //Graphics g = this.getGraphics();
+//                map=mpp;
+//                g.clearRect(0, 0, 800, 30);
+//                for(int i=0;i<n;i++){
+//                    for(int j=0;j<n;j++){
+//                        g.drawImage(pics[map[i][j]],leftX+j*50,leftY+i*50,50,50,this);
+//                    }
+//                }
+
+//                for(int i=0;i<20;i+=4){
+//
+//                    map[reply[i]][reply[i+1]] = BLANK_STATE;
+//                    map[reply[i+2]][reply[i+3]] = BLANK_STATE;
+//                    try {
+//                        Thread.currentThread().sleep(500);
+//                    } catch (InterruptedException e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                    }
+//                    GameClient.textField.setText(i/2+"");
+//                    paint(g);
+//                    //startNewGame();
+
+//                }
             }
         }
-
     }
-
+//    public int[][]mpp;
+//    public void startOriginGame(){
+//        // TODO Auto-generated method stub
+//        Graphics g = this.getGraphics();
+//        count = 0;
+//        for(int i = 0;i < mpp.length;i++) {
+//            System.arraycopy(mpp[i], 0, map[i], 0, mpp[i].length);
+//        }
+//        isClick = false;
+//        clickId = -1;
+//        clickX = -1;
+//        clickY = -1;
+//        linkMethod = -1;
+//        GameClient.textField.setText(count+"");
+//        repaint();
+//    }
 
     public void startNewGame() {
         // TODO Auto-generated method stub
         count = 0;
         mapUtil = new Map(10,n);
         map = mapUtil.getMap();
+        //final GameState fin=new GameState(count+"",map);
+//        gS=new GameState(count+"",map);
+//        reply1.add(gS);
         isClick = false;
         clickId = -1;
         clickX = -1;
@@ -459,6 +510,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         linkMethod = -1;
         GameClient.textField.setText(count+"");
         repaint();
+
     }
 
 

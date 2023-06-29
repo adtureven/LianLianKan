@@ -10,7 +10,7 @@ import java.io.*;
 import javax.swing.*;
 
 public class GameClient extends JFrame{
-    GamePanel panel2 = new GamePanel(10);
+    static GamePanel panel2 = new GamePanel(10);
     JButton button1 = new JButton("重新开始");
     JButton button2 = new JButton("退出");
     static JTextField textField = new JTextField(10);
@@ -22,9 +22,10 @@ public class GameClient extends JFrame{
         textField.setEditable(false);
 
         loadState();
-        System.out.println(gameState.getCount());
+        //System.out.println(gameState.getCount());
         panel2=new GamePanel(gameState);
         textField.setText(gameState.getCount());
+
 
         panel2.setLayout(new BorderLayout());
         panel.setLayout(new FlowLayout());
@@ -66,7 +67,7 @@ public class GameClient extends JFrame{
         });
     }
 
-    private GameState gameState;
+    public static GameState gameState;
     public void saveState(){
         try{
             gameState=new GameState(textField.getText(), panel2.get_Map());
