@@ -2,14 +2,27 @@ package 连连看;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.swing.*;
+import java.util.List;
+
 
 
 public class GamePanel extends JPanel implements ActionListener ,MouseListener,KeyListener{
 
     private Image[] pics;
     private final int n;
+
+    //private  int k=0;
+
     private int[][] map;
+
+    private int[][] map1=new int[10][10];
+    //private int[][] map2=new int[10][10];
+
+
     private final int leftX = 40;
     private final int leftY = 32;
     private boolean isClick = false;
@@ -18,17 +31,30 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
     private Node z1,z2;
     private Map mapUtil;
     public int count = 0;
+    public int count1 = 0;
+    private int k=0;
+
+    //private List<String> operationRecord;
+    private List<String> operationRecord = new ArrayList<>();
+
     //public GameState gameState;
-//    public int[] reply=new int[200];
-//    private int r_count=0;
+
+
     public static final int LINKBYHORIZONTAL = 1,LINKBYVERTICAL = 2,LINKBYONECORNER = 3,LINKBYTWOCORNER = 4;
     public static final int BLANK_STATE = -1;
-    public GameReply reply1=new GameReply();
+
     public GamePanel(int count){
         setSize(600, 600);
         n = 10;
         mapUtil = new Map(count, n);
         map = mapUtil.getMap();
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                map1[i][j]=map[i][j];
+            }
+        }
+        count1=count;
+
         this.setVisible(true);
         this.addKeyListener(this);
         this.addMouseListener(this);
@@ -40,7 +66,14 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         setSize(600, 600);
         n=10;
         count=Integer.parseInt(gameState.getCount());
+        count1=count;
         map=gameState.G_getMap();
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                map1[i][j]=map[i][j];
+            }
+        }
+
         this.setVisible(true);
         this.addKeyListener(this);
         this.addMouseListener(this);
@@ -52,13 +85,13 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
     private void getPics() {
         pics = new Image[10];
         for(int i=0;i<=9;i++){
-            pics[i] = Toolkit.getDefaultToolkit().getImage("src\\images\\pic"+(i+1)+".png");
+            pics[i] = Toolkit.getDefaultToolkit().getImage("pic"+(i+1)+".png");
         }
     }
 
     public void paint(Graphics g){
         g.clearRect(0, 0, 800, 30);
-        System.out.println("paint");
+
         for(int i=0;i<n;i++){
             for(int j=0;j<n;j++){
                 if(map[i][j]!=BLANK_STATE){
@@ -68,9 +101,10 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
                 }
             }
         }
+        k=1;
 
     }
-//水平方向的消除
+    //水平方向的消除
     private boolean horizontalLink(int clickX1, int clickY1, int clickX2, int clickY2) {
 
         if(clickY1>clickY2){
@@ -98,7 +132,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         return false;
     }
 
-//垂直方向的消除
+    //垂直方向的消除
     private boolean verticalLink(int clickX1, int clickY1, int clickX2, int clickY2) {
 
         if(clickX1>clickX2){
@@ -125,7 +159,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         return false;
     }
 
-//一个折角的消除
+    //一个折角的消除
     private boolean oneCornerLink(int clickX1, int clickY1, int clickX2, int clickY2) {
 
         if(clickY1>clickY2){
@@ -171,7 +205,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         return false;
     }
 
-//两个折角的消除
+    //两个折角的消除
     private boolean twoCornerLink(int clickX1, int clickY1, int clickX2, int clickY2) {
 
         for(int i=clickX1-1;i>=-1;i--){
@@ -333,7 +367,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         g2.setColor(Color.RED);
         g.drawRect(x+1, y+1, 48, 48);
     }
-    public GameState gS;
+
     @SuppressWarnings("static-access")
     private void drawLink(int x1, int y1, int x2, int y2) {
 
@@ -376,14 +410,6 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         repaint();
         map[x1][y1] = BLANK_STATE;
         map[x2][y2] = BLANK_STATE;
-//        gS=new GameState(count+"",map);
-//        reply1.add(gS);
-//        reply[r_count]=x1;
-//        reply[r_count+1]=y1;
-//        reply[r_count+2]=x2;
-//        reply[r_count+3]=y2;
-//        r_count+=4;
-        System.out.println("draw lines");
         isWin();
     }
 
@@ -391,7 +417,6 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
     public void clearSelectBlock(int i,int j,Graphics g){
         g.clearRect(j*50+leftX, i*50+leftY, 50, 50);
         g.drawImage(pics[map[i][j]],leftX+j*50,leftY+i*50,50,50,this);
-        System.out.println("clear");
     }
 
     public int[][]get_Map(){
@@ -441,68 +466,33 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
 
     private void isWin() {
 
-        if(count==100){
-            String msg = "是否观看本局回放？";
+        if(count==n*n){
+            String msg = "再来一轮吧";
             int type = JOptionPane.YES_NO_OPTION;
-            String title = "恭喜你完成了本轮游戏！";
+            String title = "恭喜你完成了游戏！";
             int choice = JOptionPane.showConfirmDialog(null, msg,title,type);
             if(choice==1){
                 System.exit(0);
             }else if(choice == 0){
                 startNewGame();
-                //reply1.reply();
-                //Graphics g = this.getGraphics();
-//                map=mpp;
-//                g.clearRect(0, 0, 800, 30);
-//                for(int i=0;i<n;i++){
-//                    for(int j=0;j<n;j++){
-//                        g.drawImage(pics[map[i][j]],leftX+j*50,leftY+i*50,50,50,this);
-//                    }
-//                }
-
-//                for(int i=0;i<20;i+=4){
-//
-//                    map[reply[i]][reply[i+1]] = BLANK_STATE;
-//                    map[reply[i+2]][reply[i+3]] = BLANK_STATE;
-//                    try {
-//                        Thread.currentThread().sleep(500);
-//                    } catch (InterruptedException e) {
-//                        // TODO Auto-generated catch block
-//                        e.printStackTrace();
-//                    }
-//                    GameClient.textField.setText(i/2+"");
-//                    paint(g);
-//                    //startNewGame();
-
-//                }
             }
         }
+
     }
-//    public int[][]mpp;
-//    public void startOriginGame(){
-//        // TODO Auto-generated method stub
-//        Graphics g = this.getGraphics();
-//        count = 0;
-//        for(int i = 0;i < mpp.length;i++) {
-//            System.arraycopy(mpp[i], 0, map[i], 0, mpp[i].length);
-//        }
-//        isClick = false;
-//        clickId = -1;
-//        clickX = -1;
-//        clickY = -1;
-//        linkMethod = -1;
-//        GameClient.textField.setText(count+"");
-//        repaint();
-//    }
+
 
     public void startNewGame() {
         // TODO Auto-generated method stub
         count = 0;
         mapUtil = new Map(10,n);
         map = mapUtil.getMap();
-        //final GameState fin=new GameState(count+"",map);
-//        gS=new GameState(count+"",map);
-//        reply1.add(gS);
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                map1[i][j]=map[i][j];
+            }
+        }
+        count1=count;
+
         isClick = false;
         clickId = -1;
         clickX = -1;
@@ -510,9 +500,95 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
         linkMethod = -1;
         GameClient.textField.setText(count+"");
         repaint();
-
     }
 
+    public void replay() {
+        // 重置地图和计数器
+        //resetMap();
+        int count2=0;
+        map=map1;
+        count=count1;
+
+        Graphics g = this.getGraphics();
+
+        isClick = false;
+        clickId = -1;
+        clickX = -1;
+        clickY = -1;
+        linkMethod = -1;
+        GameClient.textField.setText(count+"");
+
+        paint(g);
+        //revalidate();
+
+
+        if(k==1){
+            // 逐步执行操作记录
+            for (String operation : operationRecord) {
+                String[] parts = operation.split(" ");
+                String action = parts[0];
+                System.out.println("Operation: " + operation);
+                System.out.println("Parts length: " + parts.length);
+                System.out.println("Parts content: " + Arrays.toString(parts));
+
+                int x = Integer.parseInt(parts[1]);
+                int y = Integer.parseInt(parts[2]);
+
+                if (action.equals("CLICK")) {
+                    // 执行鼠标点击操作
+                    if (count2 == 0) {
+                        // 第一个点击，记录点击的图像编号和坐标
+                        clickId = map[x][y];
+                        clickX = x;
+                        clickY = y;
+                        isClick = true;
+                        count2=1;
+                    } else {
+                        // 第二个点击，判断是否可以连接
+                        if(clickId==map[x][y]){
+                            if(x==clickX&&y==clickY)
+                                continue;
+                            if (verticalLink(clickX,clickY,x,y)||horizontalLink(clickX,clickY,x,y)||oneCornerLink(clickX,clickY,x,y)||twoCornerLink(clickX,clickY,x,y)) {
+
+                                drawSelectedBlock(y*50+leftX,x*50+leftY,g);
+                                drawSelectedBlock(clickY*50+leftX,clickX*50+leftY,g);
+                                drawLink(clickX, clickY, x, y);
+
+                                map[clickX][clickY] = BLANK_STATE;
+                                map[x][y] = BLANK_STATE;
+                                isClick = false;
+                                count2 = 0;
+                                paint(g);
+                                try {
+                                    Thread.currentThread().sleep(500);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            else{
+                                count=1;
+                                isClick = true;
+                                clickId = map[x][y];
+                                clearSelectBlock(clickX,clickY,g);
+                                clickX = x;
+                                clickY = y;
+                                drawSelectedBlock(y*50+leftX,x*50+leftY,g);
+                            }
+                        }
+                        else{
+                            count=1;
+                            isClick = true;
+                            clickId = map[x][y];
+                            clearSelectBlock(clickX,clickY,g);
+                            clickX = x;
+                            clickY = y;
+                            drawSelectedBlock(y*50+leftX,x*50+leftY,g);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
     public static class Node{
@@ -547,12 +623,19 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
 
         Graphics g = this.getGraphics();
 
+
         int x = e.getX()-leftX;
         int y = e.getY()-leftY;
+
+        if(x<0||y<0||x>500||y>500)
+            return ;
+
         int i = y/50;
         int j = x/50;
-        if(x<0||y<0)
-            return ;
+
+        String operation = "CLICK " + i + " " + j;
+        operationRecord.add(operation);
+
 
         if(isClick){
 
@@ -561,7 +644,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
                     if(i==clickX&&j==clickY)
                         return ;
 
-                    if(verticalLink(clickX,clickY,i,j)||horizontalLink(clickX,clickY,i,j)||oneCornerLink(clickX,clickY,i,j)||twoCornerLink(clickX,clickY,i,j)){//���������ͨ���������ӣ�Ȼ����ȥѡ��ͼƬ�����õ�һ��ѡ�б�ʶ
+                    if(verticalLink(clickX,clickY,i,j)||horizontalLink(clickX,clickY,i,j)||oneCornerLink(clickX,clickY,i,j)||twoCornerLink(clickX,clickY,i,j)){
                         drawSelectedBlock(j*50+leftX,i*50+leftY,g);
                         drawLink(clickX,clickY,i,j);
                         isClick = false;
@@ -606,6 +689,7 @@ public class GamePanel extends JPanel implements ActionListener ,MouseListener,K
     @Override
     public void mouseReleased(MouseEvent e) {
         // TODO Auto-generated method stub
+
     }
 
     @Override

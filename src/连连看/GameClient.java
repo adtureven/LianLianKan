@@ -6,14 +6,18 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
+import java.net.Socket;
 
 import javax.swing.*;
 
 public class GameClient extends JFrame{
-    static GamePanel panel2 = new GamePanel(10);
+    GamePanel panel2 = new GamePanel(10);
     JButton button1 = new JButton("重新开始");
     JButton button2 = new JButton("退出");
+    JButton button3 = new JButton("replay");
     static JTextField textField = new JTextField(10);
+    private static final String SERVER_HOST = "localhost";
+    private static final int SERVER_PORT = 8888;
 
     public GameClient(){
         JLabel label1 = new JLabel("已消去方块数量：");
@@ -22,10 +26,9 @@ public class GameClient extends JFrame{
         textField.setEditable(false);
 
         loadState();
-        //System.out.println(gameState.getCount());
+        System.out.println(gameState.getCount());
         panel2=new GamePanel(gameState);
         textField.setText(gameState.getCount());
-
 
         panel2.setLayout(new BorderLayout());
         panel.setLayout(new FlowLayout());
@@ -33,6 +36,7 @@ public class GameClient extends JFrame{
         panel.add(textField);
         panel.add(button1);
         panel.add(button2);
+        panel.add(button3);
         panel.add(label2);
         this.getContentPane().setLayout(new BorderLayout());
         this.getContentPane().add(panel,BorderLayout.SOUTH);
@@ -51,6 +55,7 @@ public class GameClient extends JFrame{
         this.setVisible(true);
         button1.setEnabled(true);
         button2.setEnabled(true);
+        button3.setEnabled(true);
 
         button1.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e){
@@ -65,9 +70,16 @@ public class GameClient extends JFrame{
                 System.exit(0);
             }
         });
+
+        button3.addMouseListener(new MouseAdapter(){
+            public void mouseClicked(MouseEvent e){
+                textField.setText("0");
+                panel2.replay();
+            }
+        });
     }
 
-    public static GameState gameState;
+    private GameState gameState;
     public void saveState(){
         try{
             gameState=new GameState(textField.getText(), panel2.get_Map());
@@ -78,6 +90,23 @@ public class GameClient extends JFrame{
             fileout.close();
             System.out.println("saved");
         }catch (Exception e){e.printStackTrace();}
+
+        try (Socket socket = new Socket(SERVER_HOST, SERVER_PORT);
+             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())
+        ) {
+            //gameState = new GameState(textField.getText(), panel2.get_Map());
+
+            // 向服务器发送游戏状态数据
+            out.writeObject(gameState);
+            out.flush();
+
+            // 接收服务器的响应
+            String response = (String) in.readObject();
+            System.out.println(response);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public void loadState(){
