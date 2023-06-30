@@ -27,7 +27,7 @@ public class GameClient extends JFrame{
 
         loadState();
         System.out.println(gameState.getCount());
-        panel2=new GamePanel(gameState);
+        //panel2=new GamePanel(gameState);
         textField.setText(gameState.getCount());
 
         panel2.setLayout(new BorderLayout());
